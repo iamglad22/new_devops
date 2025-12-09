@@ -599,6 +599,7 @@ jobs:
               LogGroupId=${{ needs.deploy_ecs-req.outputs.loggroup_id }} \
               EcsRoleArn=${{ needs.deploy_ecs-req.outputs.ecs_role_arn }} \
               $PARAMS
+          echo "EcsRoleArn is $EcsRoleArn"
 
       
       - name: Get ECS Task Definition Outputs
