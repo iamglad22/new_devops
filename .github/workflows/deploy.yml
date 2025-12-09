@@ -532,6 +532,10 @@ jobs:
             echo ecs_role_arn=$(echo "$ECS_ROLE_ARN" | tr -d '\n' | tr -d '\r') >> $GITHUB_OUTPUT
         #echo "ecs_role_arn=$ECS_ROLE_ARN" >> $GITHUB_OUTPUT
 
+      - name: Inspect $GITHUB_OUTPUT
+        run: cat $GITHUB_OUTPUT
+        
+
       - name: Deploy CloudFormation Stack - ECS Cluster
         env:
           ENV_NAME: ${{ env.ENV_NAME }}
