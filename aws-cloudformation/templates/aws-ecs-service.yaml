@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IFM CloudFormation - ECS Service
+Parameters:
+  InfraCode:
+    Type: String
+  AppLoadBalancerTargetGroupId:
+    Type: String
+#  ServiceName:
+#    Type: String
+#    Description: ECS Service Name
+
+  ContainerPort:
+    Type: Number
+    Description: The port the container will listen on
+
+  ECSClusterId:
+    Type: String
+  TaskDefinitionId:
+    Type: String
+  ECSContainerName:
+    Type: String
+    Description: Name of the ECS container
+
+  ECSServiceDesiredCount:
+    Type: Number
+  PrivateSubnetId1:
+    Type: String
+  PrivateSubnetId2:
+    Type: String
+  SecurityGroupEcsId:
+    Type: String
+Resources:
+  # ========================================
+  # ECS Service
+  # ========================================
+  # ECS Service - Attach ALB Target Group
+  MyEcsService:
+    Type: AWS::ECS::Service
+    #DependsOn: ALBListener
+    Properties:
+      #ServiceName: !Ref ServiceName
+      ServiceName: !Sub "${InfraCode}-service"
+      #Cluster: !Ref MyECSCluster
+      Cluster: !Ref ECSClusterId
+      DesiredCount: !Ref ECSServiceDesiredCount
+      LaunchType: FARGATE
+      #TaskDefinition: !Ref ECSTaskDefinition
+      TaskDefinition: !Ref TaskDefinitionId
+      LoadBalancers:
+        - TargetGroupArn: !Ref AppLoadBalancerTargetGroupId
+          #TargetGroupArn: !Ref ALBTG
+          ContainerName: !Ref ECSContainerName
+          ContainerPort: !Ref ContainerPort
+      HealthCheckGracePeriodSeconds: 60
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          Subnets:
+          #  - !Ref PrivateSubnet1
+          #  - !Ref PrivateSubnet2
+            - !Ref PrivateSubnetId1
+            - !Ref PrivateSubnetId2
+          SecurityGroups:
+          #  - !Ref SecurityGroupECS
+            - !Ref SecurityGroupEcsId
+          AssignPublicIp: DISABLED

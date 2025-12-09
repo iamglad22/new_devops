@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IFM CloudFormation - S3
+Parameters:
+#  InfraCode:
+#    Type: String
+#  S3Bucketname:
+#    Type: String
+  S3BucketId:
+    Type: String
+  S3Arn:
+    Type: String
+  CloudFrontId:
+    Type: String
+
+Resources:
+  # ========================================
+  # S3 Policy
+  # ========================================
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketId
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontServiceAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            #Resource: !Sub ${S3Bucket.Arn}/*
+            Resource: !Sub ${S3Arn}/*
+            Condition:
+              StringEquals:
+                #AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}
+                AWS:SourceArn: !Sub arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontId}
+

@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: IFM CloudFormation - Log Group
+Parameters:
+  InfraCode:
+    Type: String
+#  ECSLogGroupName:
+#    Type: String
+#    Description: Log group name of ECS container
+  ServiceName:
+    Type: String
+
+  ECSLogGroupRetention:
+    Type: Number
+
+  EnvName:
+    Type: String
+Resources:
+  # =====================
+  # Log Group
+  # =====================
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      #LogGroupName: !Ref ECSLogGroupName
+      LogGroupName: !Sub "${InfraCode}/${EnvName}/${ServiceName}-log"
+      RetentionInDays: !Ref ECSLogGroupRetention
+
+Outputs:
+  LogGroupId:
+    Value: !Ref LogGroup
+    Description: Log Group ID
