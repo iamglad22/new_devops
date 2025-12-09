@@ -595,13 +595,15 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}            
       - name: Deploy CloudFormation Stack - ECS Task Definition
         run: |
+          Trim_EcsRoleArn=$(echo "${{ needs.deploy_ecs-req.outputs.ecs_role_arn }}" | tr -d '\n' | tr -d '\r')
+          echo "EcsRoleArn: $Trim_EcsRoleArn"
           PARAMS=$(jq -r '.[] | "\(.ParameterKey)=\(.ParameterValue)"' ${{ env.PARAMS_FILE }})
           aws cloudformation deploy \
             --template-file aws-cloudformation/templates/aws-ecs-taskdefinition.yaml \
             --stack-name ${{ env.ENV_NAME }}-ecs-taskdefinition \
             --parameter-overrides \
               LogGroupId=${{ needs.deploy_ecs-req.outputs.loggroup_id }} \
-              EcsRoleArn=${{ needs.deploy_ecs-req.outputs.ecs_role_arn }} \
+              EcsRoleArn="$Trim_EcsRoleArn" \
               $PARAMS
             echo "EcsRoleArn is $EcsRoleArn"
 
