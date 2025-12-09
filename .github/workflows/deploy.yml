@@ -529,8 +529,8 @@ jobs:
             --stack-name ${{ env.ENV_NAME }}-ecs-role \
             --query "Stacks[0].Outputs[?OutputKey=='EcsRoleArn'].OutputValue" \
             --output text)
-                    
-            echo "ecs_role_arn=$ECS_ROLE_ARN" >> $GITHUB_OUTPUT
+            echo ecs_role_arn=$(echo "$ECS_ROLE_ARN" | tr -d '\n' | tr -d '\r') >> $GITHUB_OUTPUT
+        #echo "ecs_role_arn=$ECS_ROLE_ARN" >> $GITHUB_OUTPUT
 
       - name: Deploy CloudFormation Stack - ECS Cluster
         env:
@@ -592,17 +592,14 @@ jobs:
       - name: Deploy CloudFormation Stack - ECS Task Definition
         run: |
           PARAMS=$(jq -r '.[] | "\(.ParameterKey)=\(.ParameterValue)"' ${{ env.PARAMS_FILE }})
-          EcsRoleArn=${{ needs.deploy_ecs-req.outputs.ecs_role_arn }}
-          EcsRoleArn_2=$(echo "$EcsRoleArn" | tr -d '\n' | tr -d '\r')
           aws cloudformation deploy \
             --template-file aws-cloudformation/templates/aws-ecs-taskdefinition.yaml \
             --stack-name ${{ env.ENV_NAME }}-ecs-taskdefinition \
             --parameter-overrides \
               LogGroupId=${{ needs.deploy_ecs-req.outputs.loggroup_id }} \
-              $EcsRoleArn_2 \
+              EcsRoleArn=${{ needs.deploy_ecs-req.outputs.ecs_role_arn }} \
               $PARAMS
-          echo "EcsRoleArn is $EcsRoleArn"
-          echo "EcsRoleArn_2" is $EcsRoleArn_2
+            echo "EcsRoleArn is $EcsRoleArn"
 
 
       
