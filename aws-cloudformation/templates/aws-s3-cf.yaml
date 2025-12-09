@@ -14,7 +14,7 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       #BucketName: !Ref S3Bucketname
-      BucketName: !Sub "${InfraCode}-bucket"
+      BucketName: !Sub "${InfraCode}-bucket2"
       OwnershipControls:
         Rules:
           - ObjectOwnership: BucketOwnerEnforced # Ensures bucket owner owns all objects
